@@ -44,8 +44,10 @@ public class Cookie {
                 httpOnly = true;
             } else {
                 int index = info.indexOf("=");
-                name = info.substring(0, index - 1);
-                value = info.substring(index + 1);
+                if (index != -1) {
+                    name = info.substring(0, index - 1);
+                    value = info.substring(index + 1);
+                }
             }
         }
     }

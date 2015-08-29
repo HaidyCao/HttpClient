@@ -4,10 +4,14 @@ import android.util.http.Encoding;
 import android.util.http.Header;
 import android.util.http.Http;
 import android.util.http.NameValuePair;
+import android.util.http.entity.ContentEntity;
 import android.util.http.entity.FormEntity;
 import android.util.http.entity.HttpEntity;
 import android.util.http.entity.StringEntity;
+import android.util.http.form.FileBody;
+import android.util.http.form.NameContent;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
@@ -63,6 +67,11 @@ public class HttpClient {
      * 是否重定向
      */
     private boolean redirection = false;
+
+    /**
+     * 是否为下载
+     */
+    private boolean download;
 
     /**
      * 请求成功的代码
@@ -171,9 +180,64 @@ public class HttpClient {
         return this;
     }
 
+    /**
+     * 提交contents
+     *
+     * @param nameContents name contents
+     * @return this
+     */
+    public HttpClient postContents(NameContent... nameContents) {
+        ContentEntity contentEntity = new ContentEntity();
+        contentEntity.addContents(nameContents);
+        setEntity(contentEntity);
+        return this;
+    }
+
+    /**
+     * 上传文件
+     *
+     * @param name name
+     * @param file file
+     * @return this
+     */
+    public HttpClient postFile(String name, File file) {
+        ContentEntity contentEntity = new ContentEntity();
+        contentEntity.addContent(name, new FileBody(file));
+        setEntity(contentEntity);
+        return this;
+    }
+
+    /**
+     * 设置实体
+     *
+     * @param entity entity
+     * @return this
+     */
     public HttpClient setEntity(HttpEntity entity) {
         this.httpRequest.setEntity(entity);
         requestMethod = Http.POST;
+        return this;
+    }
+
+    /**
+     * 设置cookie
+     *
+     * @param cookies cookies
+     * @return this
+     */
+    public HttpClient setCookies(String cookies) {
+        addHeader("Cookie", cookies);
+        return this;
+    }
+
+    /**
+     * 是否为下载
+     *
+     * @param download download or not
+     * @return this
+     */
+    public HttpClient setDownload(boolean download) {
+        this.download = download;
         return this;
     }
 
@@ -201,9 +265,7 @@ public class HttpClient {
                 conn.setUseCaches(false);
                 HttpEntity entity = httpRequest.getEntity();
                 if (entity != null) {
-                    System.out.println(entity.getContentLength());
                     conn.addRequestProperty(Http.CONTENT_LEN, String.valueOf(entity.getContentLength()));
-                    System.out.println(entity.getContentLength());
                     conn.addRequestProperty(entity.getContentType().getName(), entity.getContentType().getContent());
                     conn.addRequestProperty(entity.getContentEncoding().getName(), entity.getContentEncoding().getContent());
                     /// 写入数据
@@ -217,10 +279,11 @@ public class HttpClient {
             httpResponse.setResponseCode(-2);
             if (!shutdown) {
                 // 获取请求结果
-                httpResponse.setConnection(conn);
+                httpResponse.setConnection(conn, download);
             }
         } catch (SocketTimeoutException e) {
             e.printStackTrace();
+            // 判断是哪种超时
             if (httpResponse.getResponseCode() == -1) {
                 httpResponse.setMessage(connectionTimeoutMessage);
             } else {

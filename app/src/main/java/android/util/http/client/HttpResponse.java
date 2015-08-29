@@ -34,26 +34,75 @@ public class HttpResponse {
 
     private String message;
 
+    private InputStream inputStream;
+
     /**
      * 请求返回code
      */
     private int responseCode = -1;
 
-    public void setConnection(HttpURLConnection urlConnection) throws IOException {
+    /**
+     * 设置content
+     *
+     * @param urlConnection url content
+     * @param download      download
+     * @throws IOException io exception
+     */
+    protected void setConnection(HttpURLConnection urlConnection, boolean download) throws IOException {
         responseCode = urlConnection.getResponseCode();
 
-        if (responseCode <= HttpURLConnection.HTTP_BAD_REQUEST) {
-            InputStream is = urlConnection.getInputStream();
-            body = HttpUtils.inputStreamToByte(is);
+        if (!download) {
+            if (responseCode <= HttpURLConnection.HTTP_BAD_REQUEST) {
+                InputStream is = urlConnection.getInputStream();
+                body = HttpUtils.inputStreamToByte(is);
+                is.close();
+            } else {
+                InputStream is = urlConnection.getErrorStream();
+                body = HttpUtils.inputStreamToByte(is);
+                is.close();
+            }
         } else {
-            InputStream is = urlConnection.getErrorStream();
-            body = HttpUtils.inputStreamToByte(is);
+            if (responseCode <= HttpURLConnection.HTTP_BAD_REQUEST) {
+                inputStream = urlConnection.getInputStream();
+            } else {
+                inputStream = urlConnection.getErrorStream();
+            }
         }
 
         setHeaders(urlConnection.getHeaderFields());
         cookiesStore = new CookieStore(headers);
     }
 
+    /**
+     * 获取文件名字
+     *
+     * @return file name
+     */
+    public String getFileName() {
+        for (Header header : headers) {
+            if ("Content-disposition".equalsIgnoreCase(header.getName())) {
+                String content = header.getContent();
+                int index = content.indexOf("filename=");
+                int end;
+                if (index != -1) {
+                    String fileName = content.substring(index + 9,
+                            (end = content.indexOf(";", index)) == -1 ? content.length() : end - 1);
+                    if (fileName.startsWith("\"") && fileName.endsWith("\"")) {
+                        return fileName.substring(1, fileName.length() - 1);
+                    } else {
+                        return fileName;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 设置header
+     *
+     * @param headers header map
+     */
     private void setHeaders(Map<String, List<String>> headers) {
         Set<String> stringSet = headers.keySet();
         for (String key : stringSet) {
@@ -61,6 +110,11 @@ public class HttpResponse {
         }
     }
 
+    /**
+     * 获取data
+     *
+     * @return body data
+     */
     public byte[] getBody() {
         return body;
     }
@@ -69,18 +123,47 @@ public class HttpResponse {
         this.responseEncoding = responseEncoding;
     }
 
+    /**
+     * 获取response encoding
+     *
+     * @return encoding
+     */
     public String getResponseEncoding() {
         return responseEncoding;
     }
 
+    /**
+     * 获取header
+     *
+     * @return header
+     */
     public List<Header> getHeaders() {
         return headers;
     }
 
+    /**
+     * 获取响应code
+     *
+     * @return code
+     */
     public int getResponseCode() {
         return responseCode;
     }
 
+    /**
+     * 获取输入流，在设置为download的时候有效
+     *
+     * @return input stream
+     */
+    public InputStream getInputStream() {
+        return inputStream;
+    }
+
+    /**
+     * 设置成功响应的code
+     *
+     * @param responseCode code
+     */
     public void setResponseCode(int responseCode) {
         this.responseCode = responseCode;
     }
@@ -99,7 +182,7 @@ public class HttpResponse {
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-            throw new RuntimeException("response encoding is not enable");
+            throw new RuntimeException(e.getMessage());
         }
     }
 

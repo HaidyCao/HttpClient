@@ -20,7 +20,7 @@ public class AsyncHttpClient extends HttpClient {
         super(url);
     }
 
-    public void post(HttpResponseListener httpResponseListener) {
+    public void request(HttpResponseListener httpResponseListener) {
         this.httpResponseListener = httpResponseListener;
         thread.start();
     }
@@ -31,7 +31,6 @@ public class AsyncHttpClient extends HttpClient {
             super.run();
             // 执行
             execute();
-
             // 结束
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override

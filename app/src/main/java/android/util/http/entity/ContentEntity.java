@@ -1,6 +1,7 @@
 package android.util.http.entity;
 
 import android.util.http.form.ContentBody;
+import android.util.http.form.NameContent;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -53,10 +54,36 @@ public class ContentEntity extends AbstractHttpEntity {
         return buffer.toString();
     }
 
+    /**
+     * 添加name content
+     *
+     * @param name        name
+     * @param contentBody contentBody
+     */
     public void addContent(String name, ContentBody contentBody) {
         if (name != null && contentBody != null) {
             contentBodyMap.put(name, contentBody);
             contentBody.getDisp().getValue().add(1, "name=\"" + name + "\"");
+        }
+    }
+
+    /**
+     * add content
+     *
+     * @param nameContent name content
+     */
+    public void addContent(NameContent nameContent) {
+        addContent(nameContent.getName(), nameContent.getContent());
+    }
+
+    /**
+     * 添加name content
+     *
+     * @param nameContents s
+     */
+    public void addContents(NameContent... nameContents) {
+        for (NameContent nameContent : nameContents) {
+            addContent(nameContent);
         }
     }
 
@@ -84,6 +111,13 @@ public class ContentEntity extends AbstractHttpEntity {
         return -1;
     }
 
+    /**
+     * 写入
+     *
+     * @param outputStream output stream
+     * @param writeContent 是否写入content
+     * @throws IOException io exception
+     */
     private void write(OutputStream outputStream, boolean writeContent) throws IOException {
         Set<String> set = contentBodyMap.keySet();
 

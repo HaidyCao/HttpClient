@@ -41,6 +41,11 @@ public class Header {
         return value;
     }
 
+    /**
+     * 获取content
+     *
+     * @return content
+     */
     public String getContent() {
         StringBuilder sb = new StringBuilder();
         for (String item : value) {
