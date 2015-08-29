@@ -20,6 +20,22 @@ public class AsyncHttpClient extends HttpClient {
         super(url);
     }
 
+
+    /**
+     * 下载，使用下载时候需要用这个接口
+     *
+     * @param httpResponseListener listener
+     */
+    public void download(HttpResponseListener httpResponseListener) {
+        download = true;
+        request(httpResponseListener);
+    }
+
+    /**
+     * 异步请求，不区分post和get
+     *
+     * @param httpResponseListener listener
+     */
     public void request(HttpResponseListener httpResponseListener) {
         this.httpResponseListener = httpResponseListener;
         thread.start();

@@ -71,7 +71,7 @@ public class HttpClient {
     /**
      * 是否为下载
      */
-    private boolean download;
+    protected boolean download;
 
     /**
      * 请求成功的代码
@@ -239,6 +239,14 @@ public class HttpClient {
     public HttpClient setDownload(boolean download) {
         this.download = download;
         return this;
+    }
+
+    /**
+     * 下载
+     */
+    public void download() {
+        this.download = true;
+        execute();
     }
 
     /**
