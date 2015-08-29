@@ -1,4 +1,4 @@
-package android.util.http;
+package android.util.http.utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

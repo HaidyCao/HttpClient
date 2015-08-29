@@ -1,5 +1,8 @@
-package android.util.http;
+package android.util.http.client;
 
+import android.util.http.Encoding;
+import android.util.http.Header;
+import android.util.http.utils.HttpUtils;
 import android.util.http.cookie.CookieStore;
 
 import java.io.IOException;
@@ -29,24 +32,22 @@ public class HttpResponse {
 
     private CookieStore cookiesStore;
 
+    private String message;
+
     /**
      * 请求返回code
      */
-    private int responseCode;
+    private int responseCode = -1;
 
     public void setConnection(HttpURLConnection urlConnection) throws IOException {
         responseCode = urlConnection.getResponseCode();
 
-        System.out.println(responseCode);
-
         if (responseCode <= HttpURLConnection.HTTP_BAD_REQUEST) {
             InputStream is = urlConnection.getInputStream();
             body = HttpUtils.inputStreamToByte(is);
-            System.out.println(new String(body));
         } else {
             InputStream is = urlConnection.getErrorStream();
             body = HttpUtils.inputStreamToByte(is);
-            System.out.println(new String(body));
         }
 
         setHeaders(urlConnection.getHeaderFields());
@@ -80,6 +81,10 @@ public class HttpResponse {
         return responseCode;
     }
 
+    public void setResponseCode(int responseCode) {
+        this.responseCode = responseCode;
+    }
+
     /**
      * 获取请求结果
      *
@@ -110,6 +115,24 @@ public class HttpResponse {
         return null;
     }
 
+    /**
+     * 设置message
+     *
+     * @param message message
+     */
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    /**
+     * 获取message
+     *
+     * @return message
+     */
+    public String getMessage() {
+        return message;
+    }
+
     @Override
     public String toString() {
         return "HttpResponse{" +
@@ -118,6 +141,7 @@ public class HttpResponse {
                 ", headers=" + headers +
                 ", cookies=" + getCookies() +
                 ", responseCode=" + responseCode +
+                ", message=" + message +
                 '}';
     }
 }

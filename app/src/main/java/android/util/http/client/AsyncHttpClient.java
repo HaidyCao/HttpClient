@@ -2,10 +2,6 @@ package android.util.http.client;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.util.http.HttpResponseListener;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * 异步调用http client

@@ -1,5 +1,7 @@
-package android.util.http;
+package android.util.http.client;
 
+import android.util.http.Encoding;
+import android.util.http.Header;
 import android.util.http.entity.HttpEntity;
 
 import java.util.ArrayList;
