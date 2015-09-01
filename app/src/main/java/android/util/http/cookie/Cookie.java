@@ -30,22 +30,22 @@ public class Cookie {
 
     public Cookie(String cookie) {
         // 分解cookie
-        String[] cookieInfo = cookie.split(";");
+        String[] cookieInfo = cookie.replace(" ", "").split(";");
         for (String info : cookieInfo) {
-            if (info.startsWith("Expires")) {
+            if (info.toLowerCase().startsWith("expires")) {
                 expires = info.substring(info.indexOf("=") + 1);
-            } else if (info.startsWith("Domain")) {
+            } else if (info.toLowerCase().startsWith("domain")) {
                 domain = info.substring(info.indexOf("=") + 1);
-            } else if (info.startsWith("Path")) {
+            } else if (info.toLowerCase().startsWith("path")) {
                 path = info.substring(info.indexOf("=") + 1);
-            } else if (info.startsWith("Secure")) {
+            } else if (info.toLowerCase().startsWith("secure")) {
                 secure = true;
-            } else if (info.startsWith("HttpOnly")) {
+            } else if (info.toLowerCase().startsWith("httpOnly")) {
                 httpOnly = true;
             } else {
                 int index = info.indexOf("=");
                 if (index != -1) {
-                    name = info.substring(0, index - 1);
+                    name = info.substring(0, index);
                     value = info.substring(index + 1);
                 }
             }
