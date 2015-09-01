@@ -52,6 +52,11 @@ public class HttpClient {
      */
     private static String soTimeoutMessage = "read time out";
 
+    /**
+     * 连接失败
+     */
+    private static String connectException = "connect failure";
+
     private int connectionTimeoutOnce = connectionTimeout;
 
     private int soTimeoutOnce = soTimeout;
@@ -97,30 +102,75 @@ public class HttpClient {
         setResponseEncoding(defaultEncoding);
     }
 
+    /**
+     * 设置默认的编码
+     *
+     * @param defaultEncoding default encoding
+     */
     public static void setDefaultEncoding(String defaultEncoding) {
         HttpClient.defaultEncoding = defaultEncoding;
     }
 
+    /**
+     * 设置连接超时的时间
+     *
+     * @param connectionTimeout 连接超时
+     */
     public static void setConnectionTimeout(int connectionTimeout) {
         HttpClient.connectionTimeout = connectionTimeout;
     }
 
+    /**
+     * 设置默认连接失败的消息
+     *
+     * @param connectException 连接失败
+     */
+    public static void setConnectExceptionMessage(String connectException) {
+        HttpClient.connectException = connectException;
+    }
+
+
+    /**
+     * 设置超时的消息
+     *
+     * @param connectionTimeoutOnce 本次使用有效
+     */
     public void setConnectionTimeoutOnce(int connectionTimeoutOnce) {
         this.connectionTimeoutOnce = connectionTimeoutOnce;
     }
 
+    /**
+     * 设置连接超时Message
+     *
+     * @param connectionTimeoutMessage message
+     */
     public static void setConnectionTimeoutMessage(String connectionTimeoutMessage) {
         HttpClient.connectionTimeoutMessage = connectionTimeoutMessage;
     }
 
+    /**
+     * 设置数据超时Message
+     *
+     * @param soTimeoutMessage message
+     */
     public static void setSoTimeoutMessage(String soTimeoutMessage) {
         HttpClient.soTimeoutMessage = soTimeoutMessage;
     }
 
+    /**
+     * 设置获取数据超时时间
+     *
+     * @param soTimeout time out
+     */
     public static void setSoTimeout(int soTimeout) {
         HttpClient.soTimeout = soTimeout;
     }
 
+    /**
+     * 设置获取数据超时时间
+     *
+     * @param soTimeoutOnce once
+     */
     public void setSoTimeoutOnce(int soTimeoutOnce) {
         this.soTimeoutOnce = soTimeoutOnce;
     }
@@ -129,10 +179,20 @@ public class HttpClient {
         httpResponse.setResponseEncoding(responseEncoding);
     }
 
+    /**
+     * 设置请求数据的编码
+     *
+     * @param requestCoding encoding
+     */
     public void setRequestCoding(String requestCoding) {
         this.httpRequest.setRequestCoding(requestCoding);
     }
 
+    /**
+     * 设置成功的代码
+     *
+     * @param successfulCode code
+     */
     public void setSuccessfulCode(int successfulCode) {
         this.successfulCode = successfulCode;
     }
@@ -309,7 +369,7 @@ public class HttpClient {
                 httpResponse.setMessage(soTimeoutMessage);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            httpResponse.setMessage(connectException);
         } finally {
             if (conn != null) {
                 conn.disconnect();
