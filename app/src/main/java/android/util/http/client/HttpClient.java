@@ -78,6 +78,11 @@ public class HttpClient {
      */
     protected int successfulCode = HttpURLConnection.HTTP_OK;
 
+    /**
+     * 默认编码
+     */
+    private static String defaultEncoding = Encoding.ISO_8859_1;
+
     public HttpClient() {
         this(null);
     }
@@ -88,6 +93,12 @@ public class HttpClient {
 
     public void setUrl(String url) {
         this.url = url;
+        setRequestCoding(defaultEncoding);
+        setResponseEncoding(defaultEncoding);
+    }
+
+    public static void setDefaultEncoding(String defaultEncoding) {
+        HttpClient.defaultEncoding = defaultEncoding;
     }
 
     public static void setConnectionTimeout(int connectionTimeout) {
